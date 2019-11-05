@@ -173,6 +173,9 @@
             // sourceMediaUrl
           );
       displayCompariosn(result);
+
+      const resultCount = STTdiff.diffsCount(sttTocompare, baseText);
+      displayCompariosnCount(resultCount);
      })
 
       comparisonBtnEl.addEventListener("click", function(e) {
