@@ -88,6 +88,16 @@ function alignSTT(sttWords, transcriptText){
     return alignedResults;
 }
 
+function diffsListAsHtmlContentOnly(sttWords, transcriptText){
+    const sttWordsList = sttWords.words;
+    const opCodes =  diff(sttWordsList, transcriptText);
+    const transcriptWords = convertRefTextToList(transcriptText);
+    const alignedResults = getDiffsList(opCodes,sttWordsList,transcriptWords);
+    return diffsListToHtmlContentOnly(alignedResults);
+}
+
+
+
 module.exports = alignSTT; 
 module.exports.alignSTT = alignSTT; 
 module.exports.diffsList = diffsList;
@@ -95,4 +105,4 @@ module.exports.diffsCount = diffsCount;
 module.exports.calculateWordDuration = calculateWordDuration;
 module.exports.diffsListToHtml = diffsListToHtml;
 module.exports.diffsListAsHtml = diffsListAsHtml;
-module.exports.diffsListToHtmlContentOnly = diffsListToHtmlContentOnly;
+module.exports.diffsListAsHtmlContentOnly = diffsListAsHtmlContentOnly;

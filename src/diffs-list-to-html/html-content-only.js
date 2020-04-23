@@ -1,4 +1,4 @@
-function diffsListToHtmlContentOnly(diffsList, mediaUrl){
+function diffsListToHtmlContentOnly(diffsList){
     let htmlResult = [];
 
 
