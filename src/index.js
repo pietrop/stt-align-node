@@ -5,7 +5,7 @@ const getDiffsList = require('./diffs-list/index.js');
 const alignRefTextWithSTT = require('./align/index.js');
 const calculateWordDuration = require('./calculate-word-duration/index.js');
 const diffsListToHtml = require('./diffs-list-to-html/index.js').diffsListToHtml;
-
+const diffsListToHtmlContentOnly =  require('./diffs-list-to-html/html-content-only.js').diffsListToHtmlContentOnly
 /**
  * 
  * @param {array} sttData - array of STT words
@@ -95,3 +95,4 @@ module.exports.diffsCount = diffsCount;
 module.exports.calculateWordDuration = calculateWordDuration;
 module.exports.diffsListToHtml = diffsListToHtml;
 module.exports.diffsListAsHtml = diffsListAsHtml;
+module.exports.diffsListToHtmlContentOnly = diffsListToHtmlContentOnly;
