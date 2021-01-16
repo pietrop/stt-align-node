@@ -111,7 +111,7 @@ example output
 ## System Architecture
 
 <details>
-  <summary>Node version of [stt-align](https://github.com/bbc/stt-align) by Chris Baume - R&D.</summary>
+  <summary>Node version of <a href="https://github.com/bbc/stt-align" target="_blank" rel="noopener noreferrer">stt-align</a> by Chris Baume - R&D.</summary>
 
 <!-- _High level overview of system architecture_ -->
 
