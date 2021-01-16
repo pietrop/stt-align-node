@@ -98,7 +98,7 @@ const result = diffsCount(trainscriptSttText, transcriptText);
 example output
 
 ```json
-{ "equal": 1415, "insert": 8, "replace": 307, "delete": 62, "baseTextTotalWordCount": 1784 }
+{ "equal": 1415, "insert": 8, "replace": 307, "delete": 62, "baseTextTotalWordCount": 1784, "wer": 0.21132286995515695 }
 ```
 
 </details>
