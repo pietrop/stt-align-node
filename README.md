@@ -44,7 +44,7 @@ Other then to realign STT results with accurate text, this modules can also be u
 See [See `README` in `example-usage` folder](./example-usage/README.md) as well as [code examples](./example-usage) for more.
 
 <details>
-  <summary>`alignSTT`</summary>
+  <summary><code>alignSTT</code></summary>
 
 ```js
 const { alignSTT } = require('stt-align-node');
@@ -55,7 +55,7 @@ const result = alignSTT(transcriptStt, transcriptText);
 </details>
 
 <details>
-  <summary>`diffsList`</summary>
+  <summary><code>diffsList</code></summary>
 
 ```js
 const { diffsList } = require('stt-align-node');
@@ -66,7 +66,7 @@ const result = diffsList(trainscriptSttText, transcriptText);
 </details>
 
 <details>
-  <summary>`diffsListAsHtml`</summary>
+  <summary><code>diffsListAsHtml</code></summary>
 
 ```js
 const { diffsListAsHtml } = require('stt-align-node');
@@ -77,7 +77,7 @@ const result = diffsListAsHtml(trainscriptSttText, transcriptText, url);
 </details>
 
  <details>
-  <summary>`diffsListAsHtmlContentOnly`</summary>
+  <summary><code>diffsListAsHtmlContentOnly</code></summary>
 
 ```js
 const { diffsListAsHtmlContentOnly } = require('stt-align-node');
@@ -88,7 +88,7 @@ const result = diffsListAsHtmlContentOnly(trainscriptSttText, transcriptText);
 </details>
 
 <details>
-  <summary>`diffsCount`</summary>
+  <summary><code>diffsCount</code></summary>
 
 ```js
 const { diffsCount } = require('stt-align-node');
@@ -104,13 +104,14 @@ example output
 </details>
 
 <!-- <details>
-  <summary>`calculateWordDuration`</summary>
+  <summary>`calculateWordDuration</code></summary>
 
 </details> -->
 
 ---
 
-## System Architecture
+<details>
+  <summary><h2>System Architecture</h2></summary>
 
 <!-- _High level overview of system architecture_ -->
 
@@ -137,6 +138,8 @@ In _pseudo code_ overview of `alignSTT`:
     - first optimization
       - using neighboring words to do a first pass at setting missing start and end time when present
     - Then Missing word timings are interpolated using interpolation library [`'everpolate`](http://borischumichev.github.io/everpolate/#linear).
+
+ </details>
 
 ## Development env
 
