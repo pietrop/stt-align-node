@@ -5,7 +5,7 @@
 See [The alignment problem](./docs/the-alignment-problem.md) in the docs for more background of the problem this module set out to address.
 
 Originally developed as a node version of python's [stt-align](https://github.com/bbc/stt-align) by Chris Baume - BBC R&D.
- 
+
 ## Setup - development
 
 ```
@@ -25,62 +25,127 @@ npm install
 ```
 npm install stt-align-node
 ```
- 
 
 ---
 
 ## Usage
 
-
 Other then to realign STT results with accurate text, this modules can also be used to perform related oprations in the same domain, such as benchmarking STT.
 
-|Function| Description | type|
-|:------|------|----|
-|`alignSTT`|Realign STT json with accurate text. by transposing words from accurate text to timecodes of STT. | `json`|
-|`diffsList`|return a diff json of STT  vs accurate text | `json`|
-|`diffsListAsHtml`|return a diff of STT  vs accurate text as HTML| `html`|
-|`diffsCount`|return a diff of STT  vs accurate text as HTML| `json`|
-|`calculateWordDuration`|return a diff of STT  vs accurate text as HTML| `Number`|
-
+| Function                     | Description                                                                                       | type     |
+| :--------------------------- | ------------------------------------------------------------------------------------------------- | -------- |
+| `alignSTT`                   | Realign STT json with accurate text. by transposing words from accurate text to timecodes of STT. | `json`   |
+| `diffsList`                  | return a diff json of STT vs accurate text                                                        | `json`   |
+| `diffsListAsHtml`            | return a diff of STT vs accurate text as HTML                                                     | `html`   |
+| `diffsListAsHtmlContentOnly` | return a diff of STT vs accurate text as HTML content                                             | `html`   |
+| `diffsCount`                 | return a diff of STT vs accurate text as HTML                                                     | `json`   |
+| `calculateWordDuration`      | return a diff of STT vs accurate text as HTML                                                     | `Number` |
 
 See [See `README` in `example-usage` folder](./example-usage/README.md) as well as [code examples](./example-usage) for more.
+
+<details>
+  <summary>`alignSTT`</summary>
+
+```js
+const { alignSTT } = require('stt-align-node');
+const result = alignSTT(transcriptStt, transcriptText);
+// Do something with the result
+```
+
+</details>
+
+<details>
+  <summary>`diffsList`</summary>
+
+```js
+const { diffsList } = require('stt-align-node');
+const result = diffsList(trainscriptSttText, transcriptText);
+// Do something with the result
+```
+
+</details>
+
+<details>
+  <summary>`diffsListAsHtml`</summary>
+
+```js
+const { diffsListAsHtml } = require('stt-align-node');
+const result = diffsListAsHtml(trainscriptSttText, transcriptText, url);
+// // Do something with the result
+```
+
+</details>
+
+ <details>
+  <summary>`diffsListAsHtmlContentOnly`</summary>
+
+```js
+const { diffsListAsHtmlContentOnly } = require('stt-align-node');
+const result = diffsListAsHtml(trainscriptSttText, transcriptText);
+// // Do something with the result
+```
+
+</details>
+
+<details>
+  <summary>`diffsCount`</summary>
+
+```js
+const { diffsCount } = require('stt-align-node');
+const result = diffsCount(trainscriptSttText, transcriptText);
+```
+
+example output
+
+```json
+{ "equal": 1415, "insert": 8, "replace": 307, "delete": 62, "baseTextTotalWordCount": 1784 }
+```
+
+</details>
+
+<!-- <details>
+  <summary>`calculateWordDuration`</summary>
+
+</details> -->
 
 ---
 
 ## System Architecture
+
 <!-- _High level overview of system architecture_ -->
 
 Node version of [stt-align](https://github.com/bbc/stt-align) by Chris Baume - R&D.
 
 In _pseudo code_ overview of `alignSTT`:
 
-- input, output as described in the example usage. 
-    - Accurate base text transcription, string.
-    - Array of word objects transcription from STT service.
+- input, output as described in the example usage.
+
+  - Accurate base text transcription, string.
+  - Array of word objects transcription from STT service.
 
 - Align words
-    - normalize words, by removing capitalization and punctuation and converting numbers to letters
-    - generate array list of words from base text, and array list of words from stt transcript. 
-        - get [opcodes](https://docs.python.org/2/library/difflib.html#difflib.SequenceMatcher.get_opcodes)  using `difflib` comparing two arrays
-        - for equal matches, add matched STT word objects segment to results array base text index position.
-        - Then iterate to result array to replace STT word objects text with words from base text  
 
-    - interpolate missing words
-        - calculates missing timecodes
-        - first optimization 
-            -  using neighboring words to do a first pass at setting missing start and end time when present 
-        - Then Missing word timings are interpolated using interpolation library [`'everpolate`](http://borischumichev.github.io/everpolate/#linear).
+  - normalize words, by removing capitalization and punctuation and converting numbers to letters
+  - generate array list of words from base text, and array list of words from stt transcript.
 
+    - get [opcodes](https://docs.python.org/2/library/difflib.html#difflib.SequenceMatcher.get_opcodes) using `difflib` comparing two arrays
+    - for equal matches, add matched STT word objects segment to results array base text index position.
+    - Then iterate to result array to replace STT word objects text with words from base text
 
+  - interpolate missing words
+    - calculates missing timecodes
+    - first optimization
+      - using neighboring words to do a first pass at setting missing start and end time when present
+    - Then Missing word timings are interpolated using interpolation library [`'everpolate`](http://borischumichev.github.io/everpolate/#linear).
 
 ## Development env
+
  <!-- _How to run the development environment_
 _Coding style convention ref optional, eg which linter to use_
 _Linting, github pre-push hook - optional_ -->
 
 - node `10`
 - npm `6.1.0`
- 
 
 ## Build
 
@@ -90,15 +155,15 @@ npm run build
 
 bundles the code with react, into a `./build` folder.
 
-
 ## build demo
 
 ```
 npm run build:demo
 ```
-Demo is in docs folder 
 
-Publish demo to github pages 
+Demo is in docs folder
+
+Publish demo to github pages
 
 ```
 npm run deploy:ghpages
@@ -110,13 +175,13 @@ npm run deploy:ghpages
 npm run test:watch
 ```
 
-- [ ] add more tests 
+- [ ] add more tests
 
 ## Deployment
 
 <!-- _How to deploy the code/app into test/staging/production_ -->
 
-Deploy to npm 
+Deploy to npm
 
 ```
 npm run publish:public
@@ -126,7 +191,7 @@ npm run publish:public
 
 - [ ] Clean up repository
 - [ ] change baseText and sttText mentions to be `referenceText` and `hypothesisText`
-- [ ] add linting 
+- [ ] add linting
 - [x] add babel(?)
 - [ ] change if else to be switch statments
  -->
