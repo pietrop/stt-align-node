@@ -108,14 +108,12 @@ example output
 
 </details> -->
 
----
+## System Architecture
 
 <details>
-  <summary><h2>System Architecture</h2></summary>
+  <summary>Node version of [stt-align](https://github.com/bbc/stt-align) by Chris Baume - R&D.</summary>
 
 <!-- _High level overview of system architecture_ -->
-
-Node version of [stt-align](https://github.com/bbc/stt-align) by Chris Baume - R&D.
 
 In _pseudo code_ overview of `alignSTT`:
 
