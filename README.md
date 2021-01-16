@@ -81,7 +81,7 @@ const result = diffsListAsHtml(trainscriptSttText, transcriptText, url);
 
 ```js
 const { diffsListAsHtmlContentOnly } = require('stt-align-node');
-const result = diffsListAsHtml(trainscriptSttText, transcriptText);
+const result = diffsListAsHtmlContentOnly(trainscriptSttText, transcriptText);
 // // Do something with the result
 ```
 
