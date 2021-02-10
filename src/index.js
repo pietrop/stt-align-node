@@ -6,6 +6,7 @@ const alignRefTextWithSTT = require('./align/index.js');
 const calculateWordDuration = require('./calculate-word-duration/index.js');
 const diffsListToHtml = require('./diffs-list-to-html/index.js').diffsListToHtml;
 const diffsListToHtmlContentOnly = require('./diffs-list-to-html/html-content-only.js').diffsListToHtmlContentOnly;
+
 /**
  *
  * @param {array} sttData - array of STT words
@@ -53,6 +54,16 @@ function diff(sttWords, transcriptText) {
   const diffResults = diffGetOpcodes(sttWords, transcriptTextArray);
   return diffResults;
 }
+
+function alignSTT(sttWords, transcriptText) {
+  const sttWordsList = sttWords.words;
+  const opCodes = diff(sttWordsList, transcriptText);
+  const transcriptWords = convertRefTextToList(transcriptText);
+  const alignedResults = alignRefTextWithSTT(opCodes, sttWordsList, transcriptWords);
+  return alignedResults;
+}
+
+///////////////////////////////////////////////////////////////
 
 function diffsListAsHtml(sttWords, transcriptText, mediaUrl) {
   const sttWordsList = handleBaseTextWords(sttWords);
@@ -125,14 +136,6 @@ function diffsCount(sttWords, transcriptText) {
 // https://en.wikipedia.org/wiki/Word_error_rate
 function calculateWer({ replace, insert, deleteValue, baseTextTotalWordCount }) {
   return (replace + deleteValue + insert) / baseTextTotalWordCount;
-}
-
-function alignSTT(sttWords, transcriptText) {
-  const sttWordsList = sttWords.words;
-  const opCodes = diff(sttWordsList, transcriptText);
-  const transcriptWords = convertRefTextToList(transcriptText);
-  const alignedResults = alignRefTextWithSTT(opCodes, sttWordsList, transcriptWords);
-  return alignedResults;
 }
 
 /**

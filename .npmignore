@@ -1,2 +1,6 @@
 example-usage-moby.js 
 example-usage.js   
+.github/
+*.test.js
+build/example-usage-moby.js  
+build/example-usage.js   

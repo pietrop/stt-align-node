@@ -102,6 +102,7 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     transcriptData.push({});
   });
 
+  // console.log('opCodes', opCodes);
   opCodes.forEach((opCode) => {
     let matchType = opCode[0];
     let sttStartIndex = opCode[1];
@@ -113,17 +114,15 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
     }
-
-    // # populate transcriptData with matching words
-    transcriptData.forEach((wordObject, index) => {
-      const tmpWordObject = { ...wordObject };
-      tmpWordObject.text = transcriptWords[index];
-      return tmpWordObject;
-    });
     // # replace words with originals
   });
+  // # populate transcriptData with matching words
+  const transcriptDataTransposedWordsText = transcriptData.map((wordObject, index) => {
+    wordObject.text = transcriptWords[index];
+    return wordObject;
+  });
   // # fill in missing timestamps
-  return interpolate(transcriptData);
+  return interpolate(transcriptDataTransposedWordsText);
 }
 
 module.exports = alignRefTextWithSTT;
