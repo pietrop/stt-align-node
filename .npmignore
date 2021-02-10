@@ -4,3 +4,4 @@ example-usage.js
 *.test.js
 build/example-usage-moby.js  
 build/example-usage.js   
+index.test.js  

@@ -118,8 +118,9 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
   });
   // # populate transcriptData with matching words
   const transcriptDataTransposedWordsText = transcriptData.map((wordObject, index) => {
-    wordObject.text = transcriptWords[index];
-    return wordObject;
+    const wordO = { ...wordObject };
+    wordO.text = transcriptWords[index];
+    return wordO;
   });
   // # fill in missing timestamps
   return interpolate(transcriptDataTransposedWordsText);
