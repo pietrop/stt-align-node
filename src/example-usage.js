@@ -1,5 +1,6 @@
 const alignJSONText = require('./index.js').alignSTT;
-const baseTextAccurateTranscription = 'There WAS a day, about 10 years TEST ago, when I asked a friend to hold a baby robot upside down. ';
+const baseTextAccurateTranscription =
+  'There WAS SOME a day, about 10 years TEST ago, when I asked a friend to hold a baby robot upside down. ';
 const automatedSttTranscription = {
   words: [
     { start: 13.05, end: 13.21, text: 'there' },
