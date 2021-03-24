@@ -1,4 +1,13 @@
-const linear = require('everpolate').linear;
+// const linear = require('everpolate').linear;
+// a: The starting value
+// b: The destination value
+// n: The normal value (between 0 and 1) to control the Linear Interpolation
+// https://gist.github.com/Anthodpnt/f4ad9127a3c5479d1c0e8ff5ed79078e#file-lerp-js-L86
+// function linear(a, b, n) {
+//   return (1 - n) * a + n * b;
+// }
+const linearInterpolation = require('./simple-linear-interpolation.js');
+
 // using neighboring words to set missing start and end time when present
 function interpolationOptimization(wordsList) {
   return wordsList.map((word, index) => {
@@ -58,39 +67,10 @@ function adjustTimecodesBoundaries(words) {
 }
 
 function interpolate(wordsList) {
-  let words = interpolationOptimization(wordsList);
-  const indicies = [...Array(words.length).keys()];
-  let indiciesWithStart = [];
-  let indiciesWithEnd = [];
-  let startTimes = [];
-  let endTimes = [];
-  // interpolate times for start
-  for (let i = 0; i < words.length; i++) {
-    if ('start' in words[i]) {
-      indiciesWithStart.push(i);
-      startTimes.push(words[i].start);
-    }
-  }
-  // interpolate times for end
-  for (let i = 0; i < words.length; i++) {
-    if ('end' in words[i]) {
-      indiciesWithEnd.push(i);
-      endTimes.push(words[i].end);
-    }
-  }
-  // http://borischumichev.github.io/everpolate/#linear
-  const outStartTimes = linear(indicies, indiciesWithStart, startTimes);
-  const outEndTimes = linear(indicies, indiciesWithEnd, endTimes);
-  words = words.map((word, index) => {
-    if (!('start' in word)) {
-      word.start = outStartTimes[index];
-    }
-    if (!('end' in word)) {
-      word.end = outEndTimes[index];
-    }
-    return word;
-  });
-  return adjustTimecodesBoundaries(words);
+  const calculate = linearInterpolation(wordsList);
+
+  console.log(calculate({ start: 1.5 })); // y -> 1.5
+  // console.log(calculate({ end: 13.4 })); // x -> 1.5
 }
 
 function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
