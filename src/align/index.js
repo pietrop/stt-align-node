@@ -1,4 +1,21 @@
-const linear = require('everpolate').linear;
+const interpolateWordsTimes = require('./interpolateWordsTimes/index.js');
+// const linear = require('everpolate').linear;
+// https://stackoverflow.com/questions/22627125/grouping-consecutive-elements-together-using-javascript
+function groupingConsecutive(data) {
+  return data.reduce(function (a, b, i, v) {
+    if (b !== undefined) {
+      // ignore undefined entries
+      if (v[i - 1] === undefined) {
+        // if this is the start of a new run
+        a.push([]); // then create a new subarray
+      }
+      a[a.length - 1].push(b); // append current value to subarray
+    }
+    return a; // return state for next iteration
+  }, []); // initial top-level array
+}
+// };
+// const linear = (x, y, a) => x * (1 - a) + y * a;
 // using neighboring words to set missing start and end time when present
 function interpolationOptimization(wordsList) {
   return wordsList.map((word, index) => {
@@ -58,39 +75,64 @@ function adjustTimecodesBoundaries(words) {
 }
 
 function interpolate(wordsList) {
-  let words = interpolationOptimization(wordsList);
-  const indicies = [...Array(words.length).keys()];
-  let indiciesWithStart = [];
-  let indiciesWithEnd = [];
-  let startTimes = [];
-  let endTimes = [];
-  // interpolate times for start
-  for (let i = 0; i < words.length; i++) {
-    if ('start' in words[i]) {
-      indiciesWithStart.push(i);
-      startTimes.push(words[i].start);
-    }
-  }
-  // interpolate times for end
-  for (let i = 0; i < words.length; i++) {
-    if ('end' in words[i]) {
-      indiciesWithEnd.push(i);
-      endTimes.push(words[i].end);
-    }
-  }
-  // http://borischumichev.github.io/everpolate/#linear
-  const outStartTimes = linear(indicies, indiciesWithStart, startTimes);
-  const outEndTimes = linear(indicies, indiciesWithEnd, endTimes);
-  words = words.map((word, index) => {
-    if (!('start' in word)) {
-      word.start = outStartTimes[index];
-    }
-    if (!('end' in word)) {
-      word.end = outEndTimes[index];
-    }
-    return word;
+  const wordsListWithIndexes = wordsList.map((w, index) => {
+    return { ...w, index };
   });
-  return adjustTimecodesBoundaries(words);
+
+  const wordsWithoutTime = wordsListWithIndexes.map((word, index) => {
+    if (!word.start && !word.end) {
+      return { ...word, index };
+    }
+  });
+  const wordsWithTime = wordsListWithIndexes.map((word, index) => {
+    if (word.start && word.end) {
+      return { ...word, index };
+    }
+  });
+
+  const wordsListGroupedConsecutiveWithTime = groupingConsecutive(wordsWithTime);
+  const wordsListGroupedConsecutive = groupingConsecutive(wordsWithoutTime);
+
+  const wordsListGroupedConsecutiveInterpolated = wordsListGroupedConsecutive.map((group) => {
+    if (group.length === 1) {
+      const word = group[0];
+      const wordIndex = word.index;
+      const wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
+      const wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
+      word.start = wordStartTime;
+      word.end = wordEndTime;
+      return [word];
+    } else {
+      // TODO: if first word then zero
+      // TODO: if last word - not sure yet
+      const firstWordIndex = group[0].index;
+      const lastWordIndex = group[group.length - 1].index;
+      const lineText = group
+        .map((w) => {
+          return w.text;
+        })
+        .join(' ');
+
+      const lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
+      const lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
+      const interpolatedWords = interpolateWordsTimes(
+        lineText,
+        lineStartTime,
+        lineEndTime,
+        firstWordIndex
+      );
+      return interpolatedWords;
+    }
+  });
+
+  // recombining words
+  const interpolatedWords = [
+    wordsListGroupedConsecutiveWithTime.flat(),
+    wordsListGroupedConsecutiveInterpolated.flat(),
+  ].flat();
+
+  // re-sort the word's
+  return interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
 }
 
 function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
@@ -102,20 +144,18 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     transcriptData.push({});
   });
 
-  // console.log('opCodes', opCodes);
   opCodes.forEach((opCode) => {
     let matchType = opCode[0];
     let sttStartIndex = opCode[1];
     let sttEndIndex = opCode[2];
     let baseTextStartIndex = opCode[3];
-
     if (matchType === 'equal') {
       // slice does not not include the end - hence +1
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
     }
-    // # replace words with originals
   });
+  // # replace words with originals
   // # populate transcriptData with matching words
   const transcriptDataTransposedWordsText = transcriptData.map((wordObject, index) => {
     const wordO = { ...wordObject };
