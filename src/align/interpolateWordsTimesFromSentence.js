@@ -72,7 +72,8 @@ output looks something like this
  * @param {float} lineStartTime - start time for the sentence
  * @param {float} lineEndTime - end time for the sentence
  */
-function interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime) {
+function interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime, index) {
+  let firstWordIndex = index;
   //cb
   var resultWords = [];
 
@@ -98,7 +99,8 @@ function interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime)
     var wordStartTime = lineStartTime + wordCounter * averageWordDuration;
     var wordEndTime = wordStartTime + wordDuration;
     var correspondingWord = words[wordCounter];
-    var wordO = createWord(wordStartTime, wordEndTime, correspondingWord);
+    var wordO = createWord(wordStartTime, wordEndTime, correspondingWord, firstWordIndex);
+    firstWordIndex += 1;
     // console.log(wordO)
     resultWords.push(wordO);
     wordCounter += 1;
@@ -110,11 +112,12 @@ function interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime)
 /**
  * Helper function
  */
-function createWord(start, end, text) {
+function createWord(start, end, text, index) {
   word = {};
   word.start = start;
   word.end = end;
   word.text = text;
+  word.index = index;
   return word;
 }
 

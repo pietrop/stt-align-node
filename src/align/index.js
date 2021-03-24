@@ -1,5 +1,20 @@
 const interpolateWordsTimesFromSentence = require('./interpolateWordsTimesFromSentence.js');
 // const linear = require('everpolate').linear;
+// https://stackoverflow.com/questions/22627125/grouping-consecutive-elements-together-using-javascript
+function groupingConsecutive(data) {
+  return data.reduce(function (a, b, i, v) {
+    if (b !== undefined) {
+      // ignore undefined entries
+      if (v[i - 1] === undefined) {
+        // if this is the start of a new run
+        a.push([]); // then create a new subarray
+      }
+      a[a.length - 1].push(b); // append current value to subarray
+    }
+    return a; // return state for next iteration
+  }, []); // initial top-level array
+}
+// };
 // const linear = (x, y, a) => x * (1 - a) + y * a;
 // using neighboring words to set missing start and end time when present
 function interpolationOptimization(wordsList) {
@@ -60,74 +75,93 @@ function adjustTimecodesBoundaries(words) {
 }
 
 function interpolate(wordsList) {
-  // console.log('interpolate', wordsList);
-  // console.log('---');
-  let words = interpolationOptimization(wordsList);
-  // console.log('---');
-  // console.log('words 1', words);
-  // console.log('---');
-
+  // let words = interpolationOptimization(wordsList);
   ///////////////////////////////////////
-  const lineText = wordsList
-    .map((w) => {
-      return w.text;
-    })
-    .join(' ');
-  const lineStartTime = wordsList[0].start;
-  const lineEndTime = wordsList[wordsList.length - 1].end;
-  const interpolatedWords = interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime);
-  // console.log('---');
-  // console.log('words', words);
-  // console.log('---');
-
-  words = words.map((word, index) => {
-    if (!('start' in word)) {
-      word.start = interpolatedWords[index].start;
-    }
-    if (!('end' in word)) {
-      word.end = interpolatedWords[index].end;
-    }
-    return word;
+  const wordsListWithIndexes = wordsList.map((w, index) => {
+    return { ...w, index };
   });
-  ///////////////////////////////////////
-  return adjustTimecodesBoundaries(words);
-}
 
-// function interpolate(wordsList) {
-//   let words = interpolationOptimization(wordsList);
-//   const indicies = [...Array(words.length).keys()];
-//   let indiciesWithStart = [];
-//   let indiciesWithEnd = [];
-//   let startTimes = [];
-//   let endTimes = [];
-//   // interpolate times for start
-//   for (let i = 0; i < words.length; i++) {
-//     if ('start' in words[i]) {
-//       indiciesWithStart.push(i);
-//       startTimes.push(words[i].start);
-//     }
-//   }
-//   // interpolate times for end
-//   for (let i = 0; i < words.length; i++) {
-//     if ('end' in words[i]) {
-//       indiciesWithEnd.push(i);
-//       endTimes.push(words[i].end);
-//     }
-//   }
-//   // http://borischumichev.github.io/everpolate/#linear
-//   const outStartTimes = linear(indicies, indiciesWithStart, startTimes);
-//   const outEndTimes = linear(indicies, indiciesWithEnd, endTimes);
-//   words = words.map((word, index) => {
-//     if (!('start' in word)) {
-//       word.start = outStartTimes[index];
-//     }
-//     if (!('end' in word)) {
-//       word.end = outEndTimes[index];
-//     }
-//     return word;
-//   });
-//   return adjustTimecodesBoundaries(words);
-// }
+  const wordsWithoutTime = wordsListWithIndexes.map((word, index) => {
+    if (!word.start && !word.end) {
+      return { ...word, index };
+    }
+  });
+  const wordsWithTime = wordsListWithIndexes.map((word, index) => {
+    if (word.start && word.end) {
+      return { ...word, index };
+    }
+  });
+
+  const wordsListGroupedConsecutiveWithTime = groupingConsecutive(wordsWithTime);
+  // console.log('wordsListGroupedConsecutiveWithTime', wordsListGroupedConsecutiveWithTime);
+  const wordsListGroupedConsecutive = groupingConsecutive(wordsWithoutTime);
+  // console.log('wordsListGroupedConsecutive', wordsListGroupedConsecutive);
+
+  const wordsListGroupedConsecutiveInterpolated = wordsListGroupedConsecutive.map((group) => {
+    if (group.length === 1) {
+      const word = group[0];
+      const wordIndex = word.index;
+      const wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
+      const wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
+      // console.log('wordStartTime', wordStartTime, 'wordEndTime', wordEndTime);
+      word.start = wordStartTime;
+      word.end = wordEndTime;
+      return [word];
+    } else {
+      // TODO: if first word then zero
+      // TODO: if last word - not sure yet
+      const firstWordIndex = group[0].index;
+      const lastWordIndex = group[group.length - 1].index;
+      const lineText = group
+        .map((w) => {
+          return w.text;
+        })
+        .join(' ');
+
+      const lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
+      const lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
+      // console.log('lineStartTime-lineEndTime', lineStartTime, lineEndTime);
+      const interpolatedWords = interpolateWordsTimesFromSentence(
+        lineText,
+        lineStartTime,
+        lineEndTime,
+        firstWordIndex
+      );
+      return interpolatedWords;
+    }
+  });
+
+  // recombining words
+  const interpolatedWords = [
+    wordsListGroupedConsecutiveWithTime.flat(),
+    wordsListGroupedConsecutiveInterpolated.flat(),
+  ].flat();
+  // console.log('interpolatedWords', interpolatedWords);
+  // console.log('|-----|');
+
+  // re sort the wordsout
+  return interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
+
+  // const lineStartTime = wordsList[0].start;
+  // const lineEndTime = wordsList[wordsList.length - 1].end;
+  // const interpolatedWords = interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime);
+  // // const interpolatedWords = wordsListGroupedConsecutiveInterpolated;
+  ///////////////////////////////////////
+  // words = wordsList.map((word, index) => {
+  //   if (!('start' in word)) {
+  //     word.start = interpolatedWords[index].start;
+  //     // word.type = 'interpolated';
+  //   }
+  //   if (!('end' in word)) {
+  //     word.end = interpolatedWords[index].end;
+  //     // word.type = 'interpolated';
+  //   }
+  //   return word;
+  // });
+  // ///////////////////////////////////////
+  // // return adjustTimecodesBoundaries(words);
+  // return words;
+}
 
 function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
   // # create empty list to receive data
@@ -144,12 +178,15 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     let sttStartIndex = opCode[1];
     let sttEndIndex = opCode[2];
     let baseTextStartIndex = opCode[3];
-
+    // console.log('matchType', matchType);
     if (matchType === 'equal') {
       // slice does not not include the end - hence +1
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
     }
+    // if (matchType === 'insert') {
+    //   console.log('matchType', matchType, opCode);
+    // }
     // # replace words with originals
   });
   // # populate transcriptData with matching words
