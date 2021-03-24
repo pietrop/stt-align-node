@@ -28,4 +28,5 @@ const automatedSttTranscription = {
 };
 
 const result = alignJSONText(automatedSttTranscription, baseTextAccurateTranscription);
+console.log('/--------------------/');
 console.log(result);

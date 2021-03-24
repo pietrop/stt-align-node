@@ -1,4 +1,4 @@
-const interpolateWordsTimesFromSentence = require('./interpolateWordsTimesFromSentence.js');
+const interpolateWordsTimes = require('./interpolateWordsTimes/index.js');
 // const linear = require('everpolate').linear;
 // https://stackoverflow.com/questions/22627125/grouping-consecutive-elements-together-using-javascript
 function groupingConsecutive(data) {
@@ -75,8 +75,6 @@ function adjustTimecodesBoundaries(words) {
 }
 
 function interpolate(wordsList) {
-  // let words = interpolationOptimization(wordsList);
-  ///////////////////////////////////////
   const wordsListWithIndexes = wordsList.map((w, index) => {
     return { ...w, index };
   });
@@ -93,9 +91,7 @@ function interpolate(wordsList) {
   });
 
   const wordsListGroupedConsecutiveWithTime = groupingConsecutive(wordsWithTime);
-  // console.log('wordsListGroupedConsecutiveWithTime', wordsListGroupedConsecutiveWithTime);
   const wordsListGroupedConsecutive = groupingConsecutive(wordsWithoutTime);
-  // console.log('wordsListGroupedConsecutive', wordsListGroupedConsecutive);
 
   const wordsListGroupedConsecutiveInterpolated = wordsListGroupedConsecutive.map((group) => {
     if (group.length === 1) {
@@ -103,7 +99,6 @@ function interpolate(wordsList) {
       const wordIndex = word.index;
       const wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
       const wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
-      // console.log('wordStartTime', wordStartTime, 'wordEndTime', wordEndTime);
       word.start = wordStartTime;
       word.end = wordEndTime;
       return [word];
@@ -120,8 +115,7 @@ function interpolate(wordsList) {
 
       const lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
       const lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
-      // console.log('lineStartTime-lineEndTime', lineStartTime, lineEndTime);
-      const interpolatedWords = interpolateWordsTimesFromSentence(
+      const interpolatedWords = interpolateWordsTimes(
         lineText,
         lineStartTime,
         lineEndTime,
@@ -136,31 +130,9 @@ function interpolate(wordsList) {
     wordsListGroupedConsecutiveWithTime.flat(),
     wordsListGroupedConsecutiveInterpolated.flat(),
   ].flat();
-  // console.log('interpolatedWords', interpolatedWords);
-  // console.log('|-----|');
 
-  // re sort the wordsout
+  // re-sort the word's
   return interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
-
-  // const lineStartTime = wordsList[0].start;
-  // const lineEndTime = wordsList[wordsList.length - 1].end;
-  // const interpolatedWords = interpolateWordsTimesFromSentence(lineText, lineStartTime, lineEndTime);
-  // // const interpolatedWords = wordsListGroupedConsecutiveInterpolated;
-  ///////////////////////////////////////
-  // words = wordsList.map((word, index) => {
-  //   if (!('start' in word)) {
-  //     word.start = interpolatedWords[index].start;
-  //     // word.type = 'interpolated';
-  //   }
-  //   if (!('end' in word)) {
-  //     word.end = interpolatedWords[index].end;
-  //     // word.type = 'interpolated';
-  //   }
-  //   return word;
-  // });
-  // ///////////////////////////////////////
-  // // return adjustTimecodesBoundaries(words);
-  // return words;
 }
 
 function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
@@ -172,23 +144,18 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     transcriptData.push({});
   });
 
-  // console.log('opCodes', opCodes);
   opCodes.forEach((opCode) => {
     let matchType = opCode[0];
     let sttStartIndex = opCode[1];
     let sttEndIndex = opCode[2];
     let baseTextStartIndex = opCode[3];
-    // console.log('matchType', matchType);
     if (matchType === 'equal') {
       // slice does not not include the end - hence +1
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
     }
-    // if (matchType === 'insert') {
-    //   console.log('matchType', matchType, opCode);
-    // }
-    // # replace words with originals
   });
+  // # replace words with originals
   // # populate transcriptData with matching words
   const transcriptDataTransposedWordsText = transcriptData.map((wordObject, index) => {
     const wordO = { ...wordObject };
