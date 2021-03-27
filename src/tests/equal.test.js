@@ -1,3 +1,9 @@
+/**
+ * Equal
+ * If stt is same as base text, function should return result unchanged.
+ * This also includes ~equal where punctuation and capitalization are not the same.
+ * That basically tests the normalization rules, applied before comparison.
+ */
 const alignJSONText = require('../index.js').alignSTT;
 const automatedSttTranscription = {
   words: [

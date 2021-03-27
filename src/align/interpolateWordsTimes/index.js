@@ -2,8 +2,8 @@ function interpolateWordsTimes(lineText, lineStartTime, lineEndTime, firstWordIn
   // TODO: refactor to split via regex on space
   const wordsList = lineText.split(' ');
   if (lineStartTime === lineEndTime) {
-    return wordsList.map((word) => {
-      return { start: lineStartTime, end: lineEndTime, text: word };
+    return wordsList.map((word, index) => {
+      return { start: lineStartTime, end: lineEndTime, text: word, index: index + firstWordIndex };
     });
   } else {
     const numberOfWords = wordsList.length; //10

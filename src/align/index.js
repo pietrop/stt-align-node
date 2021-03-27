@@ -1,5 +1,5 @@
 const interpolateWordsTimes = require('./interpolateWordsTimes/index.js');
-// const linear = require('everpolate').linear;
+const linear = require('everpolate').linear;
 // https://stackoverflow.com/questions/22627125/grouping-consecutive-elements-together-using-javascript
 function groupingConsecutive(data) {
   return data.reduce(function (a, b, i, v) {
@@ -84,11 +84,13 @@ function interpolate(wordsList, optionalSegmentStartTime = 0) {
       return { ...word, index };
     }
   });
+  // console.log('wordsWithoutTime', wordsWithoutTime);
   const wordsWithTime = wordsListWithIndexes.map((word, index) => {
     if (word.start && word.end) {
       return { ...word, index };
     }
   });
+  // console.log('wordsWithTime', wordsWithTime);
 
   const wordsListGroupedConsecutiveWithTime = groupingConsecutive(wordsWithTime);
   const wordsListGroupedConsecutive = groupingConsecutive(wordsWithoutTime);
@@ -103,9 +105,22 @@ function interpolate(wordsList, optionalSegmentStartTime = 0) {
       if (wordsListWithIndexes[wordIndex - 1]) {
         wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
       } else {
+        // TODO: should only apply if it's first word in list
+        // index === 0
         wordStartTime = optionalSegmentStartTime;
       }
-      const wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
+      // Handle edge case, when last word in the list
+      // eg with inserted word at the end
+      let wordEndTime;
+      if (wordsListWithIndexes[wordIndex + 1]) {
+        wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
+      } else {
+        // const currentWordStart = wordsListWithIndexes[wordIndex].start;
+        // const currentWordEnd = wordsListWithIndexes[wordIndex].end;
+        // const duration = currentWordEnd - currentWordStart;
+        wordEndTime = wordStartTime;
+      }
+
       word.start = wordStartTime;
       word.end = wordEndTime;
       return [word];
@@ -120,13 +135,23 @@ function interpolate(wordsList, optionalSegmentStartTime = 0) {
         })
         .join(' ');
 
-      const lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
-      // console.log(
-      //   ' wordsListWithIndexes[lastWordIndex + 1',
-      //   wordsListWithIndexes[lastWordIndex],
-      //   wordsListWithIndexes[lastWordIndex + 1]
-      // );
-      const lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
+      let lineStartTime;
+      if (wordsListWithIndexes[firstWordIndex - 1]) {
+        lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
+      } else {
+        // TODO: should only apply if it's first word in list
+        // index === 0
+        lineStartTime = optionalSegmentStartTime;
+      }
+
+      // TODO: handling edge case, see above
+      let lineEndTime;
+      if (wordsListWithIndexes[lastWordIndex + 1]) {
+        lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
+      } else {
+        lineEndTime = lineStartTime;
+      }
+
       const interpolatedWords = interpolateWordsTimes(
         lineText,
         lineStartTime,
@@ -143,9 +168,13 @@ function interpolate(wordsList, optionalSegmentStartTime = 0) {
     wordsListGroupedConsecutiveInterpolated.flat(),
   ].flat();
 
+  // console.log('interpolatedWords', interpolatedWords);
+
   // re-sort the word's
   const sortedWords = interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
+  // console.log('sortedWords', sortedWords);
   // removing indexes?
+  // return sortedWords;
   return sortedWords.map(({ start, end, text }) => {
     return { start, end, text };
   });
@@ -165,15 +194,15 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords, optionalSegment
     let sttStartIndex = opCode[1];
     let sttEndIndex = opCode[2];
     let baseTextStartIndex = opCode[3];
-    console.log('matchType', matchType);
+    // console.log('matchType', matchType);
     if (matchType === 'equal') {
       // slice does not not include the end - hence +1
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
     }
-    if (matchType === 'insert') {
-      console.log(opCode);
-    }
+    // if (matchType === 'insert') {
+    //   console.log(opCode);
+    // }
   });
   // # replace words with originals
   // # populate transcriptData with matching words
