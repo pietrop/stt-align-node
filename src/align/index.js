@@ -74,7 +74,7 @@ function adjustTimecodesBoundaries(words) {
   });
 }
 
-function interpolate(wordsList) {
+function interpolate(wordsList, optionalSegmentStartTime = 0) {
   const wordsListWithIndexes = wordsList.map((w, index) => {
     return { ...w, index };
   });
@@ -97,7 +97,14 @@ function interpolate(wordsList) {
     if (group.length === 1) {
       const word = group[0];
       const wordIndex = word.index;
-      const wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
+      // handle if previous word does not have timecode
+      // eg handle if previous word is first word without timecode
+      let wordStartTime;
+      if (wordsListWithIndexes[wordIndex - 1]) {
+        wordStartTime = wordsListWithIndexes[wordIndex - 1].end;
+      } else {
+        wordStartTime = optionalSegmentStartTime;
+      }
       const wordEndTime = wordsListWithIndexes[wordIndex + 1].start;
       word.start = wordStartTime;
       word.end = wordEndTime;
@@ -114,6 +121,11 @@ function interpolate(wordsList) {
         .join(' ');
 
       const lineStartTime = wordsListWithIndexes[firstWordIndex - 1].end;
+      // console.log(
+      //   ' wordsListWithIndexes[lastWordIndex + 1',
+      //   wordsListWithIndexes[lastWordIndex],
+      //   wordsListWithIndexes[lastWordIndex + 1]
+      // );
       const lineEndTime = wordsListWithIndexes[lastWordIndex + 1].start;
       const interpolatedWords = interpolateWordsTimes(
         lineText,
@@ -132,10 +144,14 @@ function interpolate(wordsList) {
   ].flat();
 
   // re-sort the word's
-  return interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
+  const sortedWords = interpolatedWords.sort((a, b) => (a.index > b.index ? 1 : -1));
+  // removing indexes?
+  return sortedWords.map(({ start, end, text }) => {
+    return { start, end, text };
+  });
 }
 
-function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
+function alignRefTextWithSTT(opCodes, sttWords, transcriptWords, optionalSegmentStartTime = 0) {
   // # create empty list to receive data
   // transcriptData = [{} for _ in range(len(transcriptWords))]
   let transcriptData = [];
@@ -149,10 +165,14 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     let sttStartIndex = opCode[1];
     let sttEndIndex = opCode[2];
     let baseTextStartIndex = opCode[3];
+    console.log('matchType', matchType);
     if (matchType === 'equal') {
       // slice does not not include the end - hence +1
       let sttDataSegment = sttWords.slice(sttStartIndex, sttEndIndex);
       transcriptData.splice(baseTextStartIndex, sttDataSegment.length, ...sttDataSegment);
+    }
+    if (matchType === 'insert') {
+      console.log(opCode);
     }
   });
   // # replace words with originals
@@ -163,7 +183,7 @@ function alignRefTextWithSTT(opCodes, sttWords, transcriptWords) {
     return wordO;
   });
   // # fill in missing timestamps
-  return interpolate(transcriptDataTransposedWordsText);
+  return interpolate(transcriptDataTransposedWordsText, optionalSegmentStartTime);
 }
 
 module.exports = alignRefTextWithSTT;
