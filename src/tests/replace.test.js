@@ -73,7 +73,7 @@ describe('Replace - utterance recognised in STT replaced by words changed in bas
   // TODO: this one doesn't work. current behaviour, is that when replacing
   // it goes and grab the timecode of the previous words.
   // This is fine-ish~ but introduces deterioration in the accuracy of the timcodes
-  test.skip('replaced one - where start time of replaced is different from the end time of prevous one', () => {
+  test('replaced one - where start time of replaced is different from the end time of prevous one', () => {
     // const baseTextAccurateTranscription ='There was a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down. ';
 
     const baseTextAccurateTranscription =
@@ -109,7 +109,7 @@ describe('Replace - utterance recognised in STT replaced by words changed in bas
     expect(result).toEqual(expectedResult.words);
   });
 
-  test.skip('replaced - two consecutive ', () => {
+  test('replaced - two consecutive ', () => {
     // const baseTextAccurateTranscription ='There was a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down. ';
 
     const baseTextAccurateTranscription =
@@ -125,8 +125,8 @@ describe('Replace - utterance recognised in STT replaced by words changed in bas
         { end: 14.37, start: 14.13, text: '10' },
         { end: 14.61, start: 14.37, text: 'years' },
         { end: 15.15, start: 14.61, text: 'ago,' },
-        { end: 15.67, start: 15.44, text: 'REPLACED' }, //<-- replaced
-        { end: 15.82, start: 15.67, text: 'REPLACED2' }, //<-- replaced
+        { start: 15.44, end: 15.67, text: 'REPLACED' }, //<-- replaced
+        { start: 15.67, end: 15.82, text: 'REPLACED2' }, //<-- replaced
         { end: 16.19, start: 15.82, text: 'asked' },
         { end: 16.27, start: 16.19, text: 'a' },
         { end: 16.65, start: 16.27, text: 'friend' },
@@ -145,48 +145,7 @@ describe('Replace - utterance recognised in STT replaced by words changed in bas
     expect(result).toEqual(expectedResult.words);
   });
 
-  // TODO: this is an edge case, but it also doesn't work
-  test.skip('replaced -  replaced all - with custom start time', () => {
-    // const baseTextAccurateTranscription ='There was a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down. ';
-
-    const baseTextAccurateTranscription =
-      'REPLACED1 REPLACED2 REPLACED3 REPLACED4 REPLACED5 REPLACED6 REPLACED7 REPLACED8 REPLACED9 REPLACED10 REPLACED11 REPLACED12 REPLACED13 REPLACED14 REPLACED15 REPLACED16 REPLACED17 REPLACED18 REPLACED19 REPLACED20 REPLACED21';
-    const customStartTime = 13;
-    const expectedResult = {
-      words: [
-        { end: 13.21, start: customStartTime, text: 'REPLACED1' }, //<-- replaced
-        { end: 13.38, start: 13.21, text: 'REPLACED2' }, //<-- replaced
-        { end: 13.44, start: 13.38, text: 'REPLACED3' }, //<-- replaced
-        { end: 13.86, start: 13.44, text: 'REPLACED4' }, //<-- replaced
-        { end: 14.13, start: 13.86, text: 'REPLACED5' }, //<-- replaced
-        { end: 14.37, start: 14.13, text: 'REPLACED6' }, //<-- replaced
-        { end: 14.61, start: 14.37, text: 'REPLACED7' }, //<-- replaced
-        { end: 15.15, start: 14.61, text: 'REPLACED8' }, //<-- replaced
-        { end: 15.67, start: 15.44, text: 'REPLACED9' }, //<-- replaced
-        { end: 15.82, start: 15.67, text: 'REPLACED10' }, //<-- replaced
-        { end: 16.19, start: 15.82, text: 'REPLACED11' }, //<-- replaced
-        { end: 16.27, start: 16.19, text: 'REPLACED12' }, //<-- replaced
-        { end: 16.65, start: 16.27, text: 'REPLACED13' }, //<-- replaced
-        { end: 16.74, start: 16.65, text: 'REPLACED14' }, //<-- replaced
-        { end: 17.2, start: 16.74, text: 'REPLACED15' }, //<-- replaced
-        { end: 17.32, start: 17.23, text: 'REPLACED16' }, //<-- replaced
-        { end: 17.63, start: 17.32, text: 'REPLACED17' }, //<-- replaced
-        { end: 18.13, start: 17.63, text: 'REPLACED18' }, //<-- replaced
-        { end: 18.61, start: 18.17, text: 'REPLACED19' }, //<-- replaced
-        { end: 19.17, start: 18.72, text: 'REPLACED19' }, //<-- replaced
-        { end: 19.56, start: 19.17, text: 'REPLACED20' }, //<-- replaced
-      ],
-    };
-
-    const result = alignJSONText(
-      automatedSttTranscription,
-      baseTextAccurateTranscription,
-      customStartTime
-    );
-    expect(result).toEqual(expectedResult.words);
-  });
-  // TODO: this is an edge case, but it also doesn't work
-  test.skip('replaced -  replaced all - without custom start time', () => {
+  test('replaced -  replaced all - without custom start time', () => {
     // const baseTextAccurateTranscription ='There was a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down. ';
 
     const baseTextAccurateTranscription =
@@ -213,16 +172,12 @@ describe('Replace - utterance recognised in STT replaced by words changed in bas
         { end: 17.63, start: 17.32, text: 'REPLACED17' }, //<-- replaced
         { end: 18.13, start: 17.63, text: 'REPLACED18' }, //<-- replaced
         { end: 18.61, start: 18.17, text: 'REPLACED19' }, //<-- replaced
-        { end: 19.17, start: 18.72, text: 'REPLACED19' }, //<-- replaced
-        { end: 19.56, start: 19.17, text: 'REPLACED20' }, //<-- replaced
+        { end: 19.17, start: 18.72, text: 'REPLACED20' }, //<-- replaced
+        { end: 19.56, start: 19.17, text: 'REPLACED21' }, //<-- replaced
       ],
     };
 
-    const result = alignJSONText(
-      automatedSttTranscription,
-      baseTextAccurateTranscription,
-      customStartTime
-    );
+    const result = alignJSONText(automatedSttTranscription, baseTextAccurateTranscription);
     expect(result).toEqual(expectedResult.words);
   });
 });

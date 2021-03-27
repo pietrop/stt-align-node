@@ -1,5 +1,6 @@
 /**
- * Delete === word in STT is not in the base text human corrected one
+ * Delete
+ * Delete case is when a word in STT is not in the base text human corrected one
  */
 const alignJSONText = require('../index.js').alignSTT;
 const automatedSttTranscription = {
@@ -244,7 +245,7 @@ describe('Deleted - word in STT is not in the base text human corrected one', ()
     const expectedResult = {
       words: [
         //    { end: 13.21, start: 13.05, text: 'There' },
-        { end: 13.38, start: 0, text: 'was' },
+        { end: 13.21, start: 13.05, text: 'was' },
         { end: 13.44, start: 13.38, text: 'a' },
         { end: 13.86, start: 13.44, text: 'day,' },
         { end: 14.13, start: 13.86, text: 'about' },
@@ -271,45 +272,7 @@ describe('Deleted - word in STT is not in the base text human corrected one', ()
     expect(result).toEqual(expectedResult.words);
   });
 
-  test('Delete - First word - with custom start time', () => {
-    const baseTextAccurateTranscription =
-      'was a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down.';
-    const customStartTime = 13;
-    const expectedResult = {
-      words: [
-        //    { end: 13.21, start: 13.05, text: 'There' },
-        { end: 13.38, start: customStartTime, text: 'was' },
-        { end: 13.44, start: 13.38, text: 'a' },
-        { end: 13.86, start: 13.44, text: 'day,' },
-        { end: 14.13, start: 13.86, text: 'about' },
-        { end: 14.37, start: 14.13, text: '10' },
-        { end: 14.61, start: 14.37, text: 'years' },
-        { end: 15.15, start: 14.61, text: 'ago,' },
-        { end: 15.67, start: 15.44, text: 'when' },
-        { end: 15.82, start: 15.67, text: 'I' },
-        { end: 16.19, start: 15.82, text: 'asked' },
-        { end: 16.27, start: 16.19, text: 'a' },
-        { end: 16.65, start: 16.27, text: 'friend' },
-        { end: 16.74, start: 16.65, text: 'to' },
-        { end: 17.2, start: 16.74, text: 'hold' },
-        { end: 17.32, start: 17.23, text: 'a' },
-        { end: 17.63, start: 17.32, text: 'baby' },
-        { end: 18.13, start: 17.63, text: 'dinosaur' },
-        { end: 18.61, start: 18.17, text: 'robot' },
-        { end: 19.17, start: 18.72, text: 'upside' },
-        { end: 19.56, start: 19.17, text: 'down.' },
-      ],
-    };
-
-    const result = alignJSONText(
-      automatedSttTranscription,
-      baseTextAccurateTranscription,
-      customStartTime
-    );
-    expect(result).toEqual(expectedResult.words);
-  });
-
-  test.skip('Delete - First two and last two - with custom start time', () => {
+  test('Delete - First two and last two - with custom start time', () => {
     const baseTextAccurateTranscription =
       'a day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot';
     const customStartTime = 13;
@@ -317,7 +280,7 @@ describe('Deleted - word in STT is not in the base text human corrected one', ()
       words: [
         //    { end: 13.21, start: 13.05, text: 'There' },
         // { end: 13.38, start: 13.21, text: 'was' },
-        { end: 13.44, start: customStartTime, text: 'a' },
+        { end: 13.44, start: 13.38, text: 'a' },
         { end: 13.86, start: 13.44, text: 'day,' },
         { end: 14.13, start: 13.86, text: 'about' },
         { end: 14.37, start: 14.13, text: '10' },
