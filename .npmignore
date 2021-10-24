@@ -5,3 +5,7 @@ example-usage.js
 build/example-usage-moby.js  
 build/example-usage.js   
 index.test.js  
+tasks/*
+tests/
+build/tests/
+build/example-usage.js 
