@@ -17,20 +17,20 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "babel-loader": "^8.0.6",
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/node": "^7.2.0",
-    "@babel/preset-env": "^7.5.5",
-    "jest": "^25.0.0",
-    "webpack": "^4.39.1",
-    "webpack-cli": "^3.3.6",
-    "gh-pages": "^2.0.1"
+    "devDependencies": {
+    "babel-loader": "8.0.6",
+    "@babel/cli": "7.2.0",
+    "@babel/core": "7.2.0",
+    "@babel/node": "7.2.0",
+    "@babel/preset-env": "7.5.5",
+    "jest": "25.0.0",
+    "webpack": "4.39.1",
+    "webpack-cli": "3.3.6",
+    "gh-pages": "2.0.1"
   },
   "dependencies": {
-    "difflib": "^0.2.4",
+    "difflib": "0.2.4",
     "everpolate": "0.0.3",
-    "number-to-words": "^1.2.4"
+    "number-to-words": "1.2.4"
   }
 }
