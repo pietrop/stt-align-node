@@ -7,7 +7,7 @@
     "start": "node lib/index.js",
     "test": "jest src/",
     "test:watch": "jest --watchAll",
-    "example": "node lib/example-usage.js",
+    "example": "node src/example-usage.js",
     "build": "babel src -d build",
     "build:demo": "webpack --mode production",
     "publish:public": "npm run build && /bin/cp -rf package.json build/ && /bin/cp -rf README.md build/README.md  && npm publish build --access public",
@@ -17,7 +17,7 @@
   },
   "author": "",
   "license": "ISC",
-    "devDependencies": {
+  "devDependencies": {
     "babel-loader": "8.0.6",
     "@babel/cli": "7.2.0",
     "@babel/core": "7.2.0",
