@@ -8,7 +8,7 @@ const alignJSONText = require('../index.js').alignSTT;
 const automatedSttTranscription = {
   words: [
     { start: 13.05, end: 13.21, text: 'there' },
-    { start: 13.21, end: 13.38, text: 'is' },
+    { start: 13.21, end: 13.38, text: 'was' },
     { start: 13.38, end: 13.44, text: 'a' },
     { start: 13.44, end: 13.86, text: 'day' },
     { start: 13.86, end: 14.13, text: 'about' },

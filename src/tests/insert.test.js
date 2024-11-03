@@ -1,3 +1,4 @@
+const wordDuration = require("../utils/word-duration");
 /**
  * Inserted
  * Inserted, is when a word in the base text human accurate corrected text was not in the STT results.
@@ -218,10 +219,10 @@ describe('Inserted - not present in STT, added in human corrected base text', ()
     const baseTextAccurateTranscription =
       'TEST1 TEST2 There was a  day, about 10 years ago, when I asked a friend to hold a baby dinosaur robot upside down.';
 
-    const customStartTime = 13;
+    const customStartTime = 13.025;
     const expectedResult = {
       words: [
-        { end: 13.025, start: 13.025, text: 'TEST1' }, //<--
+        { end: 13.05, start: 13.025, text: 'TEST1' }, //<--
         { end: 13.05, start: 13.05, text: 'TEST2' }, //<--
         { end: 13.21, start: 13.05, text: 'There' },
         { end: 13.38, start: 13.21, text: 'was' },
@@ -282,7 +283,7 @@ describe('Inserted - not present in STT, added in human corrected base text', ()
         { end: 18.61, start: 18.17, text: 'robot' },
         { end: 19.17, start: 18.72, text: 'upside' },
         { end: 19.56, start: 19.17, text: 'down.' },
-        { end: 19.56, start: 19.56, text: 'NEW' },
+        { end:19.56+ wordDuration('NEW'), start: 19.56, text: 'NEW' },
       ],
     };
 
@@ -317,8 +318,8 @@ describe('Inserted - not present in STT, added in human corrected base text', ()
         { end: 18.61, start: 18.17, text: 'robot' },
         { end: 19.17, start: 18.72, text: 'upside' },
         { end: 19.56, start: 19.17, text: 'down.' },
-        { end: 19.56, start: 19.56, text: 'NEW' },
-        { end: 19.56, start: 19.56, text: 'INSERTED' },
+        { end:19.56+ wordDuration('NEW'), start: 19.56, text: 'NEW' },
+        { end: 19.56+ wordDuration('NEW')+ wordDuration('INSERTED'), start: 19.56+ wordDuration('NEW'), text: 'INSERTED' },
       ],
     };
 
