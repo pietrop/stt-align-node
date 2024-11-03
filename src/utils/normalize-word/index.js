@@ -4,8 +4,12 @@ const converterNumbersToWords = require('number-to-words');
  * @param {*}  num 
  * @return {boolean} - if it's a number true, if it's not false.
  */
-function isANumber(num){
-    return !isNaN(num) && num!=='';
+function isANumber(num) {
+    return !isNaN(num) && num !== '';
+}
+
+function validateTextInput(wordText) {
+    return wordText !== undefined && typeof wordText === "string" && wordText !== "";
 }
 
 /**
@@ -14,17 +18,17 @@ function isANumber(num){
  * @return {string}
  * handles edge case if word is undefined, and returns undefined in that instance
  */
-function normaliseWord(wordText){
-    if(wordText!== undefined){
+function normalizeWord(wordText) {
+    if (validateTextInput(wordText)) {
         let wordTextResult = wordText.toLowerCase().trim().replace(/[^a-z|0-9]+/g, '');
-        if(isANumber(wordTextResult)){
+        if (isANumber(wordTextResult)) {
             return converterNumbersToWords.toWords(wordTextResult);
         }
         return wordTextResult;
-    }else{
+    } else {
         return wordText
     }
-        
+
 }
 
-module.exports = normaliseWord;
+module.exports = normalizeWord;

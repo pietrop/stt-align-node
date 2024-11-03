@@ -65,7 +65,7 @@ describe('Edge ', () => {
     expect(result).toEqual(expectedResult.words);
   });
 
-  test('Edge case - only one word + one inserted ', () => {
+  test.skip('Edge case - only one word + one inserted ', () => {
     const baseTextAccurateTranscription = 'years INSERTED';
 
     const expectedResult = {

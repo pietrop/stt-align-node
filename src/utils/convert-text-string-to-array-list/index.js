@@ -1,5 +1,5 @@
-const removeCarriageReturnFromString = (refText) => {
-  return refText.trim().replace(/\n\n/g, ' ').replace(/\n/g, ' ');
+const removeCarriageReturnFromString = (text) => {
+  return text.trim().replace(/\n\n/g, ' ').replace(/\n/g, ' ');
 };
 
 const removeExtraWhiteSpaces = (text) => {
@@ -10,8 +10,8 @@ const splitOnWhiteSpaces = (text) => {
   return removeExtraWhiteSpaces(text).split(' ');
 };
 
-function convertTextStringToArrayList(refText) {
-  const transcriptTextWithoutLineBreaks = removeCarriageReturnFromString(refText);
+function convertTextStringToArrayList(text) {
+  const transcriptTextWithoutLineBreaks = removeCarriageReturnFromString(text);
   // const transcriptTextArray = transcriptTextWithoutLineBreaks.split(' ');
   const transcriptTextArray = splitOnWhiteSpaces(transcriptTextWithoutLineBreaks);
   return transcriptTextArray;
