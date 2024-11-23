@@ -2,7 +2,7 @@
 
 <!-- _One liner + link to confluence page_  _Screenshot of UI - optional_ -->
 
-See [The alignment problem](./docs/docs/the-alignement-problem.md) in the docs for more background of the problem this module set out to address.
+See [The alignment problem](https://github.com/pietrop/stt-align-node/blob/master/docs/the-alignement-problem.md) in the docs for more background of the problem this module set out to address.
 
 Originally developed as a node version of python's [stt-align](https://github.com/bbc/stt-align) by Chris Baume - BBC R&D.
 
